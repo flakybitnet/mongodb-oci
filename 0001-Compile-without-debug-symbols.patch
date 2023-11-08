@@ -1,0 +1,12 @@
+# patch < 0001-Compile-without-debug-symbols.patch
+
+--- a/SConstruct
++++ b/SConstruct
+@@ -3037,7 +3037,6 @@ if env.TargetOSIs('posix'):
+     env.Append(
+         CCFLAGS=[
+             "-fasynchronous-unwind-tables",
+-            "-g2" if not env.TargetOSIs('emscripten') else "-g",
+             "-Wall",
+             "-Wsign-compare",
+             "-Wno-unknown-pragmas",

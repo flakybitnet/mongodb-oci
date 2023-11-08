@@ -38,7 +38,7 @@ python3 -m venv .venv --prompt mongo
 source .venv/bin/activate
 python3 -m pip install -r etc/pip/compile-requirements.txt
 
-# Apply patch here
+patch < 0001-Compile-without-debug-symbols.patch
 
 python3 buildscripts/scons.py install-servers --config=force \
     -j16 \
