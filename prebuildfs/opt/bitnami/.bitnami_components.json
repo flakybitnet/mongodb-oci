@@ -1,31 +1,25 @@
 {
-    "mongodb": {
-        "arch": "amd64",
-        "distro": "debian-11",
-        "type": "NAMI",
-        "version": "7.0.2-2"
-    },
     "mongodb-shell": {
         "arch": "amd64",
-        "distro": "debian-11",
+        "distro": "debian-12",
         "type": "NAMI",
         "version": "2.0.2-0"
     },
     "render-template": {
         "arch": "amd64",
-        "distro": "debian-11",
+        "distro": "debian-12",
         "type": "NAMI",
         "version": "1.0.6-2"
     },
     "wait-for-port": {
         "arch": "amd64",
-        "distro": "debian-11",
+        "distro": "debian-12",
         "type": "NAMI",
         "version": "1.0.7-2"
     },
     "yq": {
         "arch": "amd64",
-        "distro": "debian-11",
+        "distro": "debian-12",
         "type": "NAMI",
         "version": "4.35.2-3"
     }
