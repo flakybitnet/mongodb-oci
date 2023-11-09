@@ -8,7 +8,9 @@ LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
 ENV HOME="/" \
     OS_ARCH="amd64" \
     OS_FLAVOUR="debian-12" \
-    OS_NAME="linux"
+    OS_NAME="linux" \
+    UID=1001 \
+    GID=1001
 
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -43,6 +45,8 @@ RUN apt-get autoremove --purge -y curl && \
 RUN chmod g+rwX /opt/bitnami
 
 COPY rootfs /
+RUN groupadd --gid $GID mongo && \
+    useradd --uid $UID --gid $GID --no-create-home --home-dir /opt/bitnami/mongodb mongo
 RUN /opt/bitnami/scripts/mongodb/postunpack.sh
 ENV APP_VERSION="${VERSION}" \
     BITNAMI_APP_NAME="mongodb" \
@@ -50,6 +54,6 @@ ENV APP_VERSION="${VERSION}" \
 
 EXPOSE 27017
 
-USER 1001
+USER $UID:$GID
 ENTRYPOINT [ "/opt/bitnami/scripts/mongodb/entrypoint.sh" ]
 CMD [ "/opt/bitnami/scripts/mongodb/run.sh" ]
