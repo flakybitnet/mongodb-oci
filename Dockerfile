@@ -39,7 +39,10 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     curl -SsLf "https://dist.flakybit.net/mongodb/mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz.sha256" -O ; \
     sha256sum -c "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz.sha256" ; \
     tar -zxf "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
-    rm -rf "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}".tar.gz{,.sha256}
+    rm -rf "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}".tar.gz{,.sha256} ; \
+    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.2.1/mongodb-rust-ping-linux-x64.tar.gz" -O ; \
+    tar -zxf "mongodb-rust-ping-linux-x64.tar.gz" -C /usr/bin --no-same-owner ; \
+    rm -rf "mongodb-rust-ping-linux-x64.tar.gz"
 RUN apt-get autoremove --purge -y curl && \
     apt-get update && apt-get upgrade -y && \
     apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
