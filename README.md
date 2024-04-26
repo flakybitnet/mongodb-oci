@@ -20,7 +20,7 @@ docker pull harbor.flakybit.net/mongodb/server:latest
 
 ## Building binaries
 
-Binaries are available [here](https://dist.flakybit.net/mongodb/) and were built against Debian 12:
+Binaries are available [here](https://dist.flakybit.net/mongodb/) and were built against [Debian 12](https://hub.docker.com/_/debian):
 ```
 apt update
 apt install -y build-essential
@@ -34,14 +34,16 @@ apt install -y git
 git clone --depth 1 --branch <version> https://github.com/mongodb/mongo.git
 cd  mongo
 
+apt install -y wget
+wget https://gitea.flakybit.net/fb/mongodb-docker/raw/branch/main/0001-Compile-without-debug-symbols.patch
+patch < 0001-Compile-without-debug-symbols.patch
+
 python3 -m venv .venv --prompt mongo
 source .venv/bin/activate
 python3 -m pip install -r etc/pip/compile-requirements.txt
 
-patch < 0001-Compile-without-debug-symbols.patch
-
 python3 buildscripts/scons.py install-servers --config=force \
-    -j16 \
+    -j12 \
     --opt=on \
     --release \
     --dbg=off \
@@ -49,7 +51,10 @@ python3 buildscripts/scons.py install-servers --config=force \
     --disable-warnings-as-errors \
     --variables-files=etc/scons/developer_versions.vars \
     --experimental-optimization=-sandybridge
-    
+
+apt install -y tar
+cd build/install/bin/
+tar -cvzf mongo.tar.gz mongod mongos
 ```
 
 ## Links

@@ -21,10 +21,10 @@ RUN install_packages ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi
 RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     cd /tmp/bitnami/pkg/cache/ ; \
     COMPONENTS=( \
-      "mongodb-shell-2.0.2-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "yq-4.35.2-3-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "wait-for-port-1.0.7-2-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "render-template-1.0.6-2-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "mongodb-shell-2.2.5-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "yq-4.43.1-1-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "wait-for-port-1.0.7-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "render-template-1.0.6-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
