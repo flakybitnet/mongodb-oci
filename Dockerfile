@@ -20,13 +20,13 @@ RUN install_packages ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi
     libnettle8 libnghttp2-14 libp11-kit0 libpsl5 librtmp1 libsasl2-2 libssh2-1 libssl3 libtasn1-6 libunistring2 numactl procps zlib1g
 RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     cd /tmp/bitnami/pkg/cache/ ; \
-    COMPONENTS=( \
+    BITNAMI_COMPONENTS=( \
       "mongodb-shell-2.2.5-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
       "yq-4.43.1-1-linux-${OS_ARCH}-${OS_FLAVOUR}" \
       "wait-for-port-1.0.7-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
       "render-template-1.0.6-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
     ) ; \
-    for COMPONENT in "${COMPONENTS[@]}"; do \
+    for COMPONENT in "${BITNAMI_COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz" -O ; \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz.sha256" -O ; \
@@ -35,11 +35,19 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner --wildcards '*/files' ; \
       rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
     done ; \
-    curl -SsLf "https://dist.flakybit.net/mongodb/mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz" -O ; \
-    curl -SsLf "https://dist.flakybit.net/mongodb/mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz.sha256" -O ; \
-    sha256sum -c "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz.sha256" ; \
-    tar -zxf "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
-    rm -rf "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}".tar.gz{,.sha256} ; \
+    COMPONENTS=( \
+      "mongodb-${VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "mongo-tools-100.9.4-linux-${OS_ARCH}" \
+    ) ; \
+    for COMPONENT in "${COMPONENTS[@]}"; do \
+      if [ ! -f "${COMPONENT}.tar.gz" ]; then \
+        curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz.sha256" -O ; \
+      fi ; \
+      sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
+      tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
+      rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
+    done ; \
     curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.2.1/mongodb-rust-ping-linux-x64.tar.gz" -O ; \
     tar -zxf "mongodb-rust-ping-linux-x64.tar.gz" -C /usr/bin --no-same-owner ; \
     rm -rf "mongodb-rust-ping-linux-x64.tar.gz"
