@@ -12,10 +12,10 @@ set -o pipefail
 # Load libraries
 . /opt/bitnami/scripts/libfs.sh
 . /opt/bitnami/scripts/libos.sh
-. /opt/bitnami/scripts/libmongodb.sh
+. /opt/bitnami/mongodb/scripts/libmongodb.sh
 
 # Load environment
-. /opt/bitnami/scripts/mongodb-env.sh
+. /opt/bitnami/mongodb/scripts/mongodb-env.sh
 
 is_boolean_yes "$MONGODB_DISABLE_SYSTEM_LOG" && MONGODB_DISABLE_SYSTEM_LOG="true" || MONGODB_DISABLE_SYSTEM_LOG="false"
 is_boolean_yes "$MONGODB_ENABLE_DIRECTORY_PER_DB" && MONGODB_ENABLE_DIRECTORY_PER_DB="true" || MONGODB_ENABLE_DIRECTORY_PER_DB="false"

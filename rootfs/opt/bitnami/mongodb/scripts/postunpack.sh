@@ -12,10 +12,10 @@ set -o pipefail
 # Load libraries
 . /opt/bitnami/scripts/libfs.sh
 . /opt/bitnami/scripts/liblog.sh
-. /opt/bitnami/scripts/libmongodb.sh
+. /opt/bitnami/mongodb/scripts/libmongodb.sh
 
 # Load environment
-. /opt/bitnami/scripts/mongodb-env.sh
+. /opt/bitnami/mongodb/scripts/mongodb-env.sh
 
 for dir in "$MONGODB_TMP_DIR" "$MONGODB_LOG_DIR" "$MONGODB_CONF_DIR" "$MONGODB_DEFAULT_CONF_DIR" "$MONGODB_DATA_DIR" "$MONGODB_VOLUME_DIR" "$MONGODB_INITSCRIPTS_DIR"; do
     ensure_dir_exists "$dir"
