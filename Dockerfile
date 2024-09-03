@@ -1,7 +1,7 @@
 FROM docker.io/bitnami/minideb:bookworm
 
 ENV APP_NAME="mongodb" \
-    APP_VERSION="7.0.10" \
+    APP_VERSION="7.0.11" \
     HOME="/opt/bitnami/mongodb" \
     OS_ARCH="amd64" \
     OS_FLAVOUR="debian-12" \
