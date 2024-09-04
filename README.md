@@ -1,61 +1,40 @@
 # mongodb-docker
 
-MongoDB Docker images for generic Linux AMD64 architecture
+Docker image of MongoDB database.
 
 ## Goal
 
-Since version 5 MongoDB supports only processors with AVX instructions extensions.  
-If you try to run on old processor, then you'll get error like below:
+Since version 5, MongoDB supports only processors with AVX instructions extensions.  
+If you try to run it on an old processor, then you'll get an error like below:
 ```
 /opt/bitnami/scripts/libos.sh: line 346:    58 Illegal instruction     (core dumped) "$@" > /dev/null 2>&1
 ```
-So, the goal of the project is to provide the ability to run an application on generic amd64 architecture.
+So, the goal of the project is to provide the ability to run an application on generic `amd64` architecture.
 
 ## Image
 
-You can use it in Docker as:
+Our images are based on Bitnami's and published in [Quay](https://quay.io/repository/flakybitnet/mongodb-server),
+[GHCR](https://github.com/flakybitnet/nextcloud-docker/pkgs/container/mongodb-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/server) and Harbor registries.
+
+They contain the [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping) as well as the [MongoDb tools](https://github.com/mongodb/mongo-tools).
+
+## Usage
+
+You can use it in Docker as simple as:
 ```
-docker pull harbor.flakybit.net/mongodb/server:latest
+$ docker run -d quay.io/flakybitnet/mongodb-server
+$ docker run -d ghcr.io/flakybitnet/mongodb-server
+$ docker run -d public.ecr.aws/flakybitnet/mongodb/server
+$ docker run -d harbor.flakybit.net/mongodb/server
 ```
 
-## Building binaries
+## Binaries
 
-Binaries are available [here](https://dist.flakybit.net/mongodb/) and were built against [Debian 12](https://hub.docker.com/_/debian):
-```
-apt update
-apt install -y build-essential
-apt install -y libcurl4-openssl-dev libssl-dev liblzma-dev
+Binaries are compiled by following [the instruction](./Build.md) and are available [there](https://dist.flakybit.net/mongodb/).
 
-apt install -y python3 python3-venv python-dev-is-python3
+## Source
 
-mkdir src
-cd src
-apt install -y git
-git clone --depth 1 --branch <version> https://github.com/mongodb/mongo.git
-cd  mongo
-
-apt install -y wget
-wget https://gitea.flakybit.net/fb/mongodb-docker/raw/branch/main/0001-Compile-without-debug-symbols.patch
-patch < 0001-Compile-without-debug-symbols.patch
-
-python3 -m venv .venv --prompt mongo
-source .venv/bin/activate
-python3 -m pip install -r etc/pip/compile-requirements.txt
-
-python3 buildscripts/scons.py install-servers --config=force \
-    -j12 \
-    --opt=on \
-    --release \
-    --dbg=off \
-    --linker=gold \
-    --disable-warnings-as-errors \
-    --variables-files=etc/scons/developer_versions.vars \
-    --experimental-optimization=-sandybridge
-
-apt install -y tar
-cd build/install/bin/
-tar -cvzf mongo.tar.gz mongod mongos
-```
+Source code are available at [Gitea](https://gitea.flakybit.net/flakybit/mongodb-docker) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-docker).
 
 ## Links
 
@@ -64,6 +43,6 @@ tar -cvzf mongo.tar.gz mongod mongos
 3. [MongoDB v5.0 requires CPU AVX instructions](https://github.com/turnkeylinux/tracker/issues/1724)
 4. [libos.sh: line 344 error when installing ReplicaSet](https://github.com/bitnami/charts/issues/12834)
 5. [mongodb can't be installed by helm install](https://github.com/bitnami/charts/issues/10255)
-6. [Building Mongodb without avx](https://github.com/GermanAizek/mongodb-without-avx/)
-7. [Building MongoDB](https://github.com/mongodb/mongo/blob/master/docs/building.md)
-8. [Bitnami MongoDB](https://github.com/bitnami/containers/tree/main/bitnami/mongodb/7.0/debian-11)
+6. [Bitnami MongoDB](https://github.com/bitnami/containers/tree/main/bitnami/mongodb/7.0/debian-12)
+7. [MongoDB Rust Ping](https://github.com/syndikat7/mongodb-rust-ping)
+8. [MongoDB Tools](https://github.com/mongodb/mongo-tools)
