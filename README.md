@@ -11,12 +11,12 @@ If you try to run it on an old processor, then you'll get an error like below:
 ```
 So, the goal of the project is to provide the ability to run an application on generic `amd64` architecture.
 
-## Image
+## Images
 
 Our images are based on Bitnami's and published in [Quay](https://quay.io/repository/flakybitnet/mongodb-server),
 [GHCR](https://github.com/flakybitnet/nextcloud-docker/pkgs/container/mongodb-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/server) and Harbor registries.
 
-They contain the [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping) as well as the [MongoDb tools](https://github.com/mongodb/mongo-tools).
+They also contain the [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping).
 
 ## Usage
 
@@ -45,4 +45,3 @@ Source code are available at [Gitea](https://gitea.flakybit.net/flakybit/mongodb
 5. [mongodb can't be installed by helm install](https://github.com/bitnami/charts/issues/10255)
 6. [Bitnami MongoDB](https://github.com/bitnami/containers/tree/main/bitnami/mongodb/7.0/debian-12)
 7. [MongoDB Rust Ping](https://github.com/syndikat7/mongodb-rust-ping)
-8. [MongoDB Tools](https://github.com/mongodb/mongo-tools)

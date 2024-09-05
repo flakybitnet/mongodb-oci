@@ -5,7 +5,6 @@ Binaries are available [there](https://dist.flakybit.net/mongodb/) and were buil
 apt update
 apt install -y build-essential
 apt install -y libcurl4-openssl-dev libssl-dev liblzma-dev
-[README.md](..%2Fnextcloud-docker%2FREADME.md)
 apt install -y python3 python3-venv python-dev-is-python3
 
 mkdir src
