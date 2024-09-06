@@ -1,6 +1,6 @@
 ## Building binaries
 
-Binaries are available [there](https://dist.flakybit.net/mongodb/) and were built against [Debian 12](https://hub.docker.com/_/debian):
+Binaries are available [there](https://dist.flakybit.net/mongodb/) and were built against [Debian 12 (bookworm)](https://hub.docker.com/_/debian):
 ```
 apt update
 apt install -y build-essential

@@ -1,13 +1,14 @@
 FROM docker.io/bitnami/minideb:bookworm
 
 ENV APP_NAME="mongodb" \
-    APP_VERSION="7.0.13" \
+    APP_VERSION="7.0.14" \
     HOME="/opt/bitnami/mongodb" \
     OS_ARCH="amd64" \
     OS_FLAVOUR="debian-12" \
     OS_NAME="linux" \
     UID=1001 \
-    GID=1001
+    GID=1001 \
+    PATH="/opt/bitnami/common/bin:/opt/bitnami/mongodb/bin:$PATH"
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
   org.opencontainers.image.title="${APP_NAME}" \
@@ -30,13 +31,14 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     cd /tmp/bitnami/pkg/cache/ ; \
     # Install Bitnami components
     BITNAMI_COMPONENTS=( \
-      "mongodb-shell-2.2.5-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "yq-4.43.1-1-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "wait-for-port-1.0.7-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "render-template-1.0.6-11-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "mongodb-shell-2.3.0-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "yq-4.44.3-2-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "wait-for-port-1.0.8-3-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "render-template-1.0.7-3-linux-${OS_ARCH}-${OS_FLAVOUR}" \
     ) ; \
     for COMPONENT in "${BITNAMI_COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
+        echo "Downloading $COMPONENT" ; \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz" -O ; \
         curl -SsLf "https://downloads.bitnami.com/files/stacksmith/${COMPONENT}.tar.gz.sha256" -O ; \
       fi ; \
@@ -47,10 +49,11 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     # Install custom MongoDB and tools
     COMPONENTS=( \
       "mongodb-${APP_VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "mongo-tools-100.9.4-linux-${OS_ARCH}" \
+      "mongo-tools-100.10.0-linux-${OS_ARCH}" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
+        echo "Downloading $COMPONENT" ; \
         curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz" -O ; \
         curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz.sha256" -O ; \
       fi ; \
@@ -59,9 +62,11 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
       rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
     done ; \
     # Install rust-ping
-    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.2.1/mongodb-rust-ping-linux-x64.tar.gz" -O ; \
-    tar -zxf "mongodb-rust-ping-linux-x64.tar.gz" -C /usr/bin --no-same-owner ; \
-    rm -rf "mongodb-rust-ping-linux-x64.tar.gz"
+    COMPONENT='mongodb-rust-ping-x86_64-unknown-linux-gnu' ; \
+    echo "Downloading $COMPONENT" ; \
+    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.4.0/$COMPONENT.tar.gz" -O ; \
+    tar -zxf "$COMPONENT.tar.gz" -C /usr/bin --no-same-owner ; \
+    rm -rf "$COMPONENT.tar.gz"
 
 # Remove unused packages and clean APT cache
 RUN apt-get autoremove --purge -y curl && \
