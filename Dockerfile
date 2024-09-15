@@ -22,13 +22,14 @@ RUN groupadd --gid $GID mongo && \
 
 # Update and install required system packages and dependencies
 RUN apt-get update && apt-get upgrade -y && \
-    install_packages ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi8 libgcc-s1 libgcrypt20 libgmp10 libgnutls30 \
+    install_packages ca-certificates libbrotli1 libcom-err2 libcurl4 libffi8 libgcc-s1 libgcrypt20 libgmp10 libgnutls30 \
     libgpg-error0 libgssapi-krb5-2 libhogweed6 libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblzma5 \
     libnettle8 libnghttp2-14 libp11-kit0 libpsl5 librtmp1 libsasl2-2 libssh2-1 libssl3 libtasn1-6 libunistring2 numactl procps zlib1g
 
 # Install required system packages and dependencies
 RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     cd /tmp/bitnami/pkg/cache/ ; \
+    install_packages curl ; \
     # Install Bitnami components
     BITNAMI_COMPONENTS=( \
       "mongodb-shell-2.3.0-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
@@ -44,7 +45,6 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
       fi ; \
       sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner --wildcards '*/files' ; \
-      rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
     done ; \
     # Install custom MongoDB and tools
     COMPONENTS=( \
@@ -59,21 +59,18 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
       fi ; \
       sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
-      rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
     done ; \
     # Install rust-ping
     COMPONENT='mongodb-rust-ping-x86_64-unknown-linux-gnu' ; \
     echo "Downloading $COMPONENT" ; \
     curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.4.0/$COMPONENT.tar.gz" -O ; \
     tar -zxf "$COMPONENT.tar.gz" -C /usr/bin --no-same-owner ; \
-    rm -rf "$COMPONENT.tar.gz"
-
-# Remove unused packages and clean APT cache
-RUN apt-get autoremove --purge -y curl && \
-    apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp/bitnami/pkg/cache
-
-# Fix permissions
-RUN chmod g+rwX /opt/bitnami ; \
+    # Remove unused packages and clean cache
+    apt-get autoremove --purge -y curl && \
+    apt-get clean && \
+    rm -rf /tmp/bitnami/pkg/cache /var/lib/apt/lists /var/cache/apt/archives ; \
+    # Fix permissions
+    chmod g+rwX /opt/bitnami ; \
     find / -perm /6000 -type f -exec chmod a-s {} \; || true ; \
     /opt/bitnami/mongodb/scripts/postunpack.sh
 
