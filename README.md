@@ -22,10 +22,10 @@ They also contain the [healthcheck utility written in Rust](https://github.com/s
 
 You can use it in Docker as simple as:
 ```
-$ docker run -d quay.io/flakybitnet/mongodb-server
-$ docker run -d ghcr.io/flakybitnet/mongodb-server
-$ docker run -d public.ecr.aws/flakybitnet/mongodb/server
-$ docker run -d harbor.flakybit.net/mongodb/server
+$ docker run -d quay.io/flakybitnet/mongodb-server:<version>
+$ docker run -d ghcr.io/flakybitnet/mongodb-server:<version>
+$ docker run -d public.ecr.aws/flakybitnet/mongodb/server:<version>
+$ docker run -d harbor.flakybit.net/mongodb/server:<version>
 ```
 
 ## Binaries
@@ -45,3 +45,4 @@ Source code are available at [Gitea](https://gitea.flakybit.net/flakybit/mongodb
 5. [mongodb can't be installed by helm install](https://github.com/bitnami/charts/issues/10255)
 6. [Bitnami MongoDB](https://github.com/bitnami/containers/tree/main/bitnami/mongodb/7.0/debian-12)
 7. [MongoDB Rust Ping](https://github.com/syndikat7/mongodb-rust-ping)
+8. [MongoDB Tools](https://github.com/mongodb/mongo-tools)
