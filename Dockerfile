@@ -1,7 +1,15 @@
 FROM docker.io/bitnami/minideb:bookworm
 
+ARG MONGO_VERSION
+ARG MONGO_SHELL_VERSION
+ARG MONGO_TOOLS_VERSION
+ARG MONGO_RUST_PING_VERSION
+ARG YQ_VERSION
+ARG WAIT_PORT_VERSION
+ARG RENDER_TEMPLATE_VERSION
+
 ENV APP_NAME="mongodb" \
-    APP_VERSION="7.0.14" \
+    APP_VERSION=$MONGO_VERSION \
     HOME="/opt/bitnami/mongodb" \
     OS_ARCH="amd64" \
     OS_FLAVOUR="debian-12" \
@@ -32,10 +40,10 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     install_packages curl ; \
     # Install Bitnami components
     BITNAMI_COMPONENTS=( \
-      "mongodb-shell-2.3.0-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "yq-4.44.3-2-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "wait-for-port-1.0.8-3-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "render-template-1.0.7-3-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "mongodb-shell-${MONGO_SHELL_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "yq-${YQ_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "wait-for-port-${WAIT_PORT_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "render-template-${RENDER_TEMPLATE_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
     ) ; \
     for COMPONENT in "${BITNAMI_COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -49,7 +57,7 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     # Install custom MongoDB and tools
     COMPONENTS=( \
       "mongodb-${APP_VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "mongo-tools-100.10.0-linux-${OS_ARCH}" \
+      "mongo-tools-${MONGO_TOOLS_VERSION}-linux-${OS_ARCH}" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -63,7 +71,7 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     # Install rust-ping
     COMPONENT='mongodb-rust-ping-x86_64-unknown-linux-gnu' ; \
     echo "Downloading $COMPONENT" ; \
-    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v0.4.0/$COMPONENT.tar.gz" -O ; \
+    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v${MONGO_RUST_PING_VERSION}/$COMPONENT.tar.gz" -O ; \
     tar -zxf "$COMPONENT.tar.gz" -C /usr/bin --no-same-owner ; \
     # Remove unused packages and clean cache
     apt-get autoremove --purge -y curl && \
