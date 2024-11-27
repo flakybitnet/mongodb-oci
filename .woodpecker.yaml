@@ -5,8 +5,7 @@
 variables:
   - &debian_image 'public.ecr.aws/docker/library/debian:bookworm-slim'
   - &kaniko_image "gcr.io/kaniko-project/executor:v1.23.2-debug"
-  - &skopeo_image "quay.io/containers/skopeo:v1.15.2"
-  - &awscli_image "public.ecr.aws/aws-cli/aws-cli:2.17.42"
+  - &skopeo_image "public.ecr.aws/flakybitnet/skopeo:1.16.1-fb1"
 
 when:
   - branch: main
@@ -40,6 +39,7 @@ steps:
   publish-quay:
     when:
       evaluate: '(RUN_PHASES == "" || "publish-quay" in split(RUN_PHASES, ",")) && (CI_COMMIT_TAG != "" || CI_MANUAL_TAG != "")'
+    failure: ignore
     image: *skopeo_image
     environment:
       DEST_REGISTRY: quay.io
@@ -50,6 +50,7 @@ steps:
   publish-ghcr:
     when:
       evaluate: '(RUN_PHASES == "" || "publish-ghcr" in split(RUN_PHASES, ",")) && (CI_COMMIT_TAG != "" || CI_MANUAL_TAG != "")'
+    failure: ignore
     image: *skopeo_image
     environment:
       DEST_REGISTRY: ghcr.io
@@ -57,22 +58,16 @@ steps:
         from_secret: fb_ghcr_creds
     commands:
       - .ci/publish-external.sh
-  login-ecr:
+  publish-ecr:
     when:
       evaluate: '(RUN_PHASES == "" || "publish-ecr" in split(RUN_PHASES, ",")) && (CI_COMMIT_TAG != "" || CI_MANUAL_TAG != "")'
-    image: *awscli_image
+    failure: ignore
     environment:
+      DEST_REGISTRY: public.ecr.aws
       AWS_ACCESS_KEY_ID:
         from_secret: fb_ecr_key_id
       AWS_SECRET_ACCESS_KEY:
         from_secret: fb_ecr_key
-    commands:
-      - .ci/login-ecr.sh
-  publish-ecr:
-    environment:
-      DEST_REGISTRY: public.ecr.aws
-    when:
-      evaluate: '(RUN_PHASES == "" || "publish-ecr" in split(RUN_PHASES, ",")) && (CI_COMMIT_TAG != "" || CI_MANUAL_TAG != "")'
     image: *skopeo_image
     commands:
       - .ci/publish-external.sh

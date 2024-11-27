@@ -66,6 +66,16 @@ setRegistryAuth () {
     unset auth auths
 }
 
+# $1 - configuration file
+# $2 - registry
+# $3 - creds helper
+setRegistryCredHelper () {
+    helpers=$(printf '{"credHelpers":{"%s":"%s"}}' "$2" "$3")
+    printf '%s' "$helpers" > "$1"
+
+    unset helpers
+}
+
 # AWS_ACCESS_KEY_ID - login
 # AWS_SECRET_ACCESS_KEY - password
 # $1 - file with token
