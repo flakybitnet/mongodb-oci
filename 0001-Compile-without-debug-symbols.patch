@@ -1,8 +1,6 @@
-# patch < 0001-Compile-without-debug-symbols.patch
-
 --- a/SConstruct
 +++ b/SConstruct
-@@ -3037,7 +3037,6 @@ if env.TargetOSIs('posix'):
+@@ -3020,7 +3020,6 @@
      env.Append(
          CCFLAGS=[
              "-fasynchronous-unwind-tables",
