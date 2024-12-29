@@ -15,6 +15,7 @@ dockerfile="./Dockerfile"
 echo && echo "Building $image image"
 executor -c ./ -f "$dockerfile" -d "$HARBOR_REGISTRY/$image" \
     --build-arg MONGO_VERSION="$MONGO_VERSION" \
+    --build-arg MONGO_BINARIES_VERSION="$MONGO_BINARIES_VERSION" \
     --build-arg MONGO_SHELL_VERSION="$MONGO_SHELL_VERSION" \
     --build-arg MONGO_TOOLS_VERSION="$MONGO_TOOLS_VERSION" \
     --build-arg MONGO_RUST_PING_VERSION="$MONGO_RUST_PING_VERSION" \

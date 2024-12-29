@@ -1,6 +1,7 @@
 FROM docker.io/bitnami/minideb:bookworm
 
 ARG MONGO_VERSION
+ARG MONGO_BINARIES_VERSION
 ARG MONGO_SHELL_VERSION
 ARG MONGO_TOOLS_VERSION
 ARG MONGO_RUST_PING_VERSION
@@ -56,7 +57,7 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
     done ; \
     # Install custom MongoDB and tools
     COMPONENTS=( \
-      "mongodb-${APP_VERSION}-0-linux-${OS_ARCH}-${OS_FLAVOUR}" \
+      "mongodb-${MONGO_BINARIES_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
       "mongo-tools-${MONGO_TOOLS_VERSION}-linux-${OS_ARCH}" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
