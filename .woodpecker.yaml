@@ -24,6 +24,18 @@ steps:
     image: *debian_image
     commands:
       - .ci/set-env.sh
+  get-dist:
+    when:
+      evaluate: 'RUN_PHASES == "" || "build-image" in split(RUN_PHASES, ",")'
+    image: *debian_image
+    commands:
+      - .ci/get-dist.sh
+  prepare-rootfs:
+    when:
+      evaluate: 'RUN_PHASES == "" || "build-image" in split(RUN_PHASES, ",")'
+    image: *debian_image
+    commands:
+      - .ci/prepare-rootfs.sh
 
   # image
   image:
