@@ -15,6 +15,7 @@ when:
       exclude: main
     event:
       - manual
+      - push
       - tag
 
 steps:
