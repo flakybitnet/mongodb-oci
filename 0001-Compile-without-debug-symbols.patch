@@ -1,6 +1,6 @@
 --- a/SConstruct
 +++ b/SConstruct
-@@ -3020,7 +3020,6 @@
+@@ -3109,7 +3109,6 @@
      env.Append(
          CCFLAGS=[
              "-fasynchronous-unwind-tables",

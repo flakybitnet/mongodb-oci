@@ -14,7 +14,7 @@ app_component='server'
 printf 'APP_COMPONENT=%s\n' "$app_component" >> "$CI_ENV_FILE"
 
 printf 'APP_VERSION=%s\n' "$(getAppVersion)" >> "$CI_ENV_FILE"
-mongo_version='7.0.18'
+mongo_version='8.0.6'
 printf 'MONGO_VERSION=%s\n' "$mongo_version" >> "$CI_ENV_FILE"
 printf 'MONGO_BINARIES_VERSION=%s\n' "$mongo_version-0" >> "$CI_ENV_FILE"
 printf 'MONGO_SHELL_VERSION=%s\n' '2.3.4-0' >> "$CI_ENV_FILE"

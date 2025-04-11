@@ -23,7 +23,8 @@ patch src/third_party/mozjs/extract/mozglue/misc/SIMD.cpp 0003-Disabled_AVX_in_m
 
 python3 -m venv .venv --prompt mongo
 source .venv/bin/activate
-python3 -m pip install -r etc/pip/compile-requirements.txt
+python3 -m pip install 'poetry==2.0.0'
+python3 -m poetry install --no-root --sync
 
 python3 buildscripts/scons.py install-servers --config=force \
     -j12 \

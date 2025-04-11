@@ -1,6 +1,6 @@
 --- a/src/third_party/mozjs/SConscript
 +++ b/src/third_party/mozjs/SConscript
-@@ -144,10 +143,6 @@
+@@ -146,10 +146,6 @@
      "extract/js/src/wasm/WasmCode-platform.cpp",
  ]
  
