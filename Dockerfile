@@ -55,24 +55,22 @@ RUN mkdir -p /tmp/bitnami/pkg/cache/ ; \
       sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner --wildcards '*/files' ; \
     done ; \
-    # Install custom MongoDB and tools
-    COMPONENTS=( \
-      "mongodb-${MONGO_BINARIES_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" \
-      "mongo-tools-${MONGO_TOOLS_VERSION}-linux-${OS_ARCH}" \
-    ) ; \
-    for COMPONENT in "${COMPONENTS[@]}"; do \
-      if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        echo "Downloading $COMPONENT" ; \
-        curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz" -O ; \
-        curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz.sha256" -O ; \
-      fi ; \
-      sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
-      tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
-    done ; \
+    # Install custom MongoDB \
+    COMPONENT="mongodb-${MONGO_BINARIES_VERSION}-linux-${OS_ARCH}-${OS_FLAVOUR}" ; \
+    echo "Downloading $COMPONENT" ; \
+    curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz" -O ; \
+    curl -SsLf "https://dist.flakybit.net/mongodb/${COMPONENT}.tar.gz.sha256" -O ; \
+    sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
+    tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami/mongodb/bin --no-same-owner ; \
+    # Install MongoDB tools
+    COMPONENT="mongodb-database-tools-debian12-x86_64-${MONGO_TOOLS_VERSION}" ; \
+    echo "Downloading $COMPONENT" ; \
+    curl -SsLf "https://fastdl.mongodb.org/tools/db/${COMPONENT}.tgz" -O ; \
+    tar -zxf "$COMPONENT.tgz" -C /opt/bitnami/mongodb/bin --no-same-owner --strip-components=2 ${COMPONENT}/bin ; \
     # Install rust-ping
     COMPONENT='mongodb-rust-ping-x86_64-unknown-linux-gnu' ; \
     echo "Downloading $COMPONENT" ; \
-    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v${MONGO_RUST_PING_VERSION}/$COMPONENT.tar.gz" -O ; \
+    curl -SsLf "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v${MONGO_RUST_PING_VERSION}/${COMPONENT}.tar.gz" -O ; \
     tar -zxf "$COMPONENT.tar.gz" -C /usr/bin --no-same-owner ; \
     # Remove unused packages and clean cache
     apt-get autoremove --purge -y curl && \
