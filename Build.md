@@ -34,7 +34,8 @@ python3 buildscripts/scons.py install-servers --config=force \
     --linker=gold \
     --disable-warnings-as-errors \
     --variables-files=etc/scons/developer_versions.vars \
-    --experimental-optimization=-sandybridge
+    --experimental-optimization=-sandybridge \
+    CXXFLAGS="-Wno-interference-size -march=x86-64 -msse4.2"
 
 apt install -y tar
 cd build/install/bin/

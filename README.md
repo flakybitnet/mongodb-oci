@@ -9,7 +9,8 @@ If you try to run it on an old processor, then you'll get an error like below:
 ```
 /opt/bitnami/scripts/libos.sh: line 346:    58 Illegal instruction     (core dumped) "$@" > /dev/null 2>&1
 ```
-So, the goal of the project is to provide the ability to run an application on generic `amd64` architecture.
+So, the goal of the project is to provide the ability to run an application on generic `x86-64` architecture.
+However, the build target for version 8 are processors which support [SSE4.2](https://en.wikipedia.org/wiki/SSE4#SSE4.2).
 
 ## Images
 
