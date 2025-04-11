@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright VMware, Inc.
+# Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 #
 # Bitnami MongoDB library
@@ -156,9 +156,6 @@ Available options are 'primary/secondary/arbiter/hidden'"
             print_validation_error "$error_message"
         fi
     fi
-
-    check_yes_no_value "MONGODB_ENABLE_MAJORITY_READ"
-    [[ "$(mongodb_get_version)" =~ ^5\..\. ]] && ! is_boolean_yes "$MONGODB_ENABLE_MAJORITY_READ" && warn "MONGODB_ENABLE_MAJORITY_READ=${MONGODB_ENABLE_MAJORITY_READ} Will be ignored in MongoDB 5.0"
 
     if [[ -n "$MONGODB_REPLICA_SET_KEY" ]] && ((${#MONGODB_REPLICA_SET_KEY} < 5)); then
         error_message="MONGODB_REPLICA_SET_KEY must be, at least, 5 characters long!"
@@ -489,7 +486,7 @@ mongodb_set_journal_conf() {
 
     if ! mongodb_is_file_external "$conf_file_name"; then
         # Disable journal.enabled since it is not supported from 7.0 on
-        if [[ "$(mongodb_get_version)" =~ ^7\..\. ]]; then
+        if [[ "$(mongodb_get_major_version)" -ge 7 ]]; then
             mongodb_conf="$(sed '/journal:/,/enabled: .*/d' "$conf_file_path")"
             echo "$mongodb_conf" >"$conf_file_path"
         else
@@ -584,7 +581,12 @@ mongodb_disable_javascript_conf() {
     local -r conf_file_name="${conf_file_path#"$MONGODB_CONF_DIR"}"
 
     if ! mongodb_is_file_external "$conf_file_name"; then
-        mongodb_config_apply_regex "#?security:" "security:\n  javascriptEnabled: false" "$conf_file_path"
+        if grep -q -E "^[[:space:]]*javascriptEnabled:" "$conf_file_path"; then
+            mongodb_config_apply_regex "javascriptEnabled:.*" "javascriptEnabled: false" "$conf_file_path"
+        else
+            # The 'javascriptEnabled' property will be added to the config file
+            mongodb_config_apply_regex "#?security:" "security:\n  javascriptEnabled: false" "$conf_file_path"
+        fi
     else
         debug "$conf_file_name mounted. Skipping disabling javascript"
     fi
@@ -604,10 +606,12 @@ mongodb_set_auth_conf() {
     local -r conf_file_name="${conf_file_path#"$MONGODB_CONF_DIR"}"
 
     local authorization
+    local localhostBypass
 
-    if ! mongodb_is_file_external "$conf_file_name"; then
+    localhostBypass="$(mongodb_conf_get "setParameter.enableLocalhostAuthBypass")"
+    authorization="$(mongodb_conf_get "security.authorization")"
+    if ! is_boolean_yes "$MONGODB_DISABLE_ENFORCE_AUTH"; then
         if [[ -n "$MONGODB_ROOT_PASSWORD" ]] || [[ -n "$MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD" ]] || [[ -n "$MONGODB_PASSWORD" ]]; then
-            authorization="$(yq eval .security.authorization "$MONGODB_CONF_FILE")"
             if [[ "$authorization" = "disabled" ]]; then
 
                 info "Enabling authentication..."
@@ -617,7 +621,27 @@ mongodb_set_auth_conf() {
             fi
         fi
     else
-        debug "$conf_file_name mounted. Skipping authorization enabling"
+        warn "You have set MONGODB_DISABLE_ENFORCE_AUTH=true, settings enableLocalhostAuthBypass and security.authorization will remain with values '${localhostBypass}' and '${authorization}' respectively."
+    fi
+}
+
+########################
+# Read a configuration setting value
+# Globals:
+#   MONGODB_CONF_FILE
+# Arguments:
+#   $1 - key
+# Returns:
+#   Outputs the key to stdout (Empty response if key is not set)
+#########################
+mongodb_conf_get() {
+    local key="${1:?missing key}"
+
+    if [[ -r "$MONGODB_CONF_FILE" ]]; then
+        local -r res="$(yq eval ".${key}" "$MONGODB_CONF_FILE")"
+        if [[ ! "$res" = "null" ]]; then
+            echo "$res"
+        fi
     fi
 }
 
@@ -642,7 +666,7 @@ mongodb_set_replicasetmode_conf() {
             mongodb_config_apply_regex "replSetName:.*" "replSetName: $MONGODB_REPLICA_SET_NAME" "$conf_file_path"
         fi
         if [[ -n "$MONGODB_ENABLE_MAJORITY_READ" ]]; then
-            mongodb_config_apply_regex "enableMajorityReadConcern:.*" "enableMajorityReadConcern: $({ (is_boolean_yes "$MONGODB_ENABLE_MAJORITY_READ" || [[ "$(mongodb_get_version)" =~ ^5\..\. ]]) && echo 'true'; } || echo 'false')" "$conf_file_path"
+            mongodb_config_apply_regex "enableMajorityReadConcern:.*" "enableMajorityReadConcern: $({ (is_boolean_yes "$MONGODB_ENABLE_MAJORITY_READ" || [[ "$(mongodb_get_major_version)" -eq 5 ]]) && echo 'true'; } || echo 'false')" "$conf_file_path"
         fi
     else
         debug "$conf_file_name mounted. Skipping replicaset mode enabling"
@@ -675,7 +699,7 @@ mongodb_create_user() {
     [[ -z "$database" ]] && query="db.getSiblingDB(db.stats().db).createUser({ user: '$user', pwd: '$password', roles: [{role: 'readWrite', db: db.getSiblingDB(db.stats().db).stats().db }] })"
     # Create user, discarding mongo CLI output for clean logs
     info "Creating user '$user'..."
-    mongodb_execute "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "" "127.0.0.1" <<<"$query"
+    mongodb_execute "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "" "127.0.0.1" "" "${MONGODB_SHELL_EXTRA_FLAGS} --tlsAllowInvalidHostnames" <<<"$query"
 }
 
 ########################
@@ -692,7 +716,7 @@ mongodb_create_users() {
 
     if [[ -n "$MONGODB_ROOT_PASSWORD" ]] && ! [[ "$MONGODB_REPLICA_SET_MODE" =~ ^(secondary|arbiter|hidden) ]]; then
         info "Creating $MONGODB_ROOT_USER user..."
-        mongodb_execute "" "" "" "127.0.0.1" <<EOF
+        mongodb_execute "" "" "" "127.0.0.1" "" "${MONGODB_SHELL_EXTRA_FLAGS} --tlsAllowInvalidHostnames" <<EOF
 db.getSiblingDB('admin').createUser({ user: '$MONGODB_ROOT_USER', pwd: '$MONGODB_ROOT_PASSWORD', roles: [{role: 'root', db: 'admin'}] })
 EOF
     fi
@@ -722,7 +746,7 @@ EOF
 
     if [[ -n "$MONGODB_METRICS_USERNAME" ]] && [[ -n "$MONGODB_METRICS_PASSWORD" ]]; then
         info "Creating '$MONGODB_METRICS_USERNAME' user..."
-        mongodb_execute "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "" "127.0.0.1" <<EOF
+        mongodb_execute "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "" "127.0.0.1" "" "${MONGODB_SHELL_EXTRA_FLAGS} --tlsAllowInvalidHostnames" <<EOF
 db.getSiblingDB('admin').createUser({ user: '$MONGODB_METRICS_USERNAME', pwd: '$MONGODB_METRICS_PASSWORD', roles: [{role: 'clusterMonitor', db: 'admin'},{ role: 'read', db: 'local' }] })
 EOF
     fi
@@ -792,7 +816,7 @@ mongodb_is_primary_node_initiated() {
     local port="${2:?port is required}"
     local result
     result=$(
-        mongodb_execute_print_output "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "admin" "127.0.0.1" "$MONGODB_PORT_NUMBER" <<EOF
+        mongodb_execute_print_output "$MONGODB_ROOT_USER" "$MONGODB_ROOT_PASSWORD" "admin" "127.0.0.1" "$MONGODB_PORT_NUMBER" "${MONGODB_SHELL_EXTRA_FLAGS} --tlsAllowInvalidHostnames" <<EOF
 rs.initiate({"_id":"$MONGODB_REPLICA_SET_NAME", "members":[{"_id":0,"host":"$node:$port","priority":5}]})
 EOF
     )
@@ -1393,6 +1417,8 @@ configure_permissions() {
 #   None
 #########################
 mongodb_initialize() {
+    local localhostBypass
+    local authorization
     info "Initializing MongoDB..."
 
     rm -f "$MONGODB_PID_FILE"
@@ -1417,7 +1443,15 @@ mongodb_initialize() {
         am_i_root && chown -R "$MONGODB_DAEMON_USER" "$MONGODB_DATA_DIR/db"
 
         mongodb_start_bg "$MONGODB_CONF_FILE"
-        mongodb_create_users
+
+        localhostBypass="$(mongodb_conf_get "setParameter.enableLocalhostAuthBypass")"
+        authorization="$(mongodb_conf_get "security.authorization")"
+        if [[ "$localhostBypass" != "true" && "$authorization" == "enabled" ]]; then
+            warn "Your mongodb.conf has authentication enforced, users creation will be skipped. If you'd like automatic user creation, you can disable it and it will be enabled after user creation."
+        else
+            mongodb_create_users
+            mongodb_set_auth_conf "$MONGODB_CONF_FILE"
+        fi
         if [[ -n "$MONGODB_REPLICA_SET_MODE" ]]; then
             mongodb_set_replicasetmode_conf "$MONGODB_CONF_FILE"
             mongodb_set_listen_all_conf "$MONGODB_CONF_FILE"
@@ -1435,8 +1469,6 @@ mongodb_initialize() {
             mongodb_set_replicasetmode_conf "$MONGODB_CONF_FILE"
         fi
     fi
-
-    mongodb_set_auth_conf "$MONGODB_CONF_FILE"
 }
 
 ########################
@@ -1487,6 +1519,20 @@ mongodb_is_file_external() {
 #########################
 mongodb_get_version() {
     mongod --version 2>/dev/null | awk -F\" '/"version"/ {print $4}'
+}
+
+########################
+# Get MongoDB major version
+# Globals:
+#   MONGODB_*
+# Arguments:
+#   None
+# Returns:
+#   major version
+#########################
+mongodb_get_major_version() {
+    # shellcheck disable=SC2005
+    echo "$(mongodb_get_version)" | cut --delimiter='.' --fields=1
 }
 
 ########################
@@ -1622,7 +1668,7 @@ mongodb_execute() {
     debug_execute mongodb_execute_print_output "$@"
 }
 
-# Copyright VMware, Inc.
+# Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 
 # shellcheck disable=SC2148
