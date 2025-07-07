@@ -4,8 +4,8 @@
 
 variables:
   - &debian_image 'public.ecr.aws/docker/library/debian:bookworm-slim'
-  - &kaniko_image "gcr.io/kaniko-project/executor:v1.23.2-debug"
-  - &skopeo_image "public.ecr.aws/flakybitnet/skopeo:1.18.0-fb1"
+  - &kaniko_image "gcr.io/kaniko-project/executor:v1.24.0-debug"
+  - &skopeo_image "public.ecr.aws/flakybitnet/skopeo:1.19.0-fb1"
 
 when:
   - branch: main
