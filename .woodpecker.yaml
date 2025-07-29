@@ -8,15 +8,13 @@ variables:
   - &skopeo_image "public.ecr.aws/flakybitnet/skopeo:1.19.0-fb1"
 
 when:
-  - branch: main
-    event:
-      - manual
-  - branch:
-      exclude: main
-    event:
-      - manual
-      - push
+  - event:
       - tag
+      - manual
+  - event:
+      - push
+    branch:
+      exclude: main
 
 steps:
   # prepare
