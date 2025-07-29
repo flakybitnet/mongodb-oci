@@ -1,13 +1,12 @@
 --- a/src/third_party/mozjs/SConscript
 +++ b/src/third_party/mozjs/SConscript
-@@ -146,10 +146,6 @@
-     "extract/js/src/wasm/WasmCode-platform.cpp",
+@@ -148,8 +148,7 @@
  ]
- 
--if env['TARGET_ARCH'] == 'x86_64' and not env.TargetOSIs('windows'):
+
+ if env['TARGET_ARCH'] == 'x86_64' and not env.TargetOSIs('windows'):
 -    env.Append(CCFLAGS=['-mavx2'])
 -    sources.extend(["extract/mozglue/misc/SIMD_avx2.cpp", "extract/mozglue/misc/SSE.cpp"])
--
++    sources.extend(["extract/mozglue/misc/SSE.cpp"])
+
  if env.TargetOSIs('windows'):
      sources.extend([
-         "extract/mozglue/misc/ConditionVariable_windows.cpp",
