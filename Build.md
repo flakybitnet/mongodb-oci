@@ -14,11 +14,11 @@ git clone --depth 1 --branch <version> https://github.com/mongodb/mongo.git
 cd  mongo
 
 apt install -y wget
-wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/main/0001-Compile-without-debug-symbols.patch
+wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/7.0/0001-Compile-without-debug-symbols.patch
 patch SConstruct 0001-Compile-without-debug-symbols.patch
-wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/main/0002-Removed_AVX-2_CCFLAG_from_mozjs.patch
+wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/7.0/0002-Removed_AVX-2_CCFLAG_from_mozjs.patch
 patch src/third_party/mozjs/SConscript 0002-Removed_AVX-2_CCFLAG_from_mozjs.patch
-wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/main/0003-Disabled_AVX_in_mozjs_SIMD.patch
+wget https://gitea.flakybit.net/flakybit/mongodb-docker/raw/branch/7.0/0003-Disabled_AVX_in_mozjs_SIMD.patch
 patch src/third_party/mozjs/extract/mozglue/misc/SIMD.cpp 0003-Disabled_AVX_in_mozjs_SIMD.patch
 
 python3 -m venv .venv --prompt mongo
