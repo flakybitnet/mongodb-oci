@@ -152,7 +152,7 @@ mirror-image-amazon:
   image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
   variables:
     REGISTRY: public.ecr.aws
-    IMAGE: flakybitnet/mongodb-server
+    IMAGE: flakybitnet/mongodb/server
     GIT_STRATEGY: none
     AWS_ACCESS_KEY_ID: $ECR_USER
     AWS_SECRET_ACCESS_KEY: $ECR_PASSWORD
