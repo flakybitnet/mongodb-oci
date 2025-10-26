@@ -1,6 +1,6 @@
-# mongodb-docker
+# MongoDB OCI
 
-Docker image of MongoDB database.
+Container images of MongoDB database.
 
 ## Goal
 
@@ -15,7 +15,7 @@ However, the build target for version 8 are processors which support [SSE4.2](ht
 ## Images
 
 Our images are based on Bitnami's and published in [Quay](https://quay.io/repository/flakybitnet/mongodb-server),
-[GHCR](https://github.com/flakybitnet/nextcloud-docker/pkgs/container/mongodb-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/server) and Harbor registries.
+[GHCR](https://github.com/flakybitnet/mongodb-oci/pkgs/container/mongodb-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/server) and [GitLab](https://gitlab.flakybit.net/fb/mongodb-oci/container_registry) registries.
 
 They also contain the [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping).
 
@@ -26,16 +26,16 @@ You can use it in Docker as simple as:
 $ docker run -d quay.io/flakybitnet/mongodb-server:<version>
 $ docker run -d ghcr.io/flakybitnet/mongodb-server:<version>
 $ docker run -d public.ecr.aws/flakybitnet/mongodb/server:<version>
-$ docker run -d harbor.flakybit.net/mongodb/server:<version>
+$ docker run -d registry.flakybit.net/fb/mongodb-oci/server:<version>
 ```
 
 ## Binaries
 
-Binaries are compiled by following [the instruction](./Build.md) and are available [there](https://dist.flakybit.net/mongodb/).
+Binaries are compiled by following [the instruction](./Build.md) and are available [there](https://gitlab.flakybit.net/fb/mongodb-oci/-/packages/).
 
 ## Source
 
-Source code are available at [Gitea](https://gitea.flakybit.net/flakybit/mongodb-docker) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-docker).
+Source code are available at [GitLab](https://gitlab.flakybit.net/fb/mongodb-oci) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-oci).
 
 ## Links
 
