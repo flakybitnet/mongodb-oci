@@ -31,7 +31,7 @@ $ docker run -d registry.flakybit.net/fb/mongodb-oci/server:<version>
 
 ## Binaries
 
-Binaries are compiled by following [the instruction](./Build.md) and are available [there](https://gitlab.flakybit.net/fb/mongodb-oci/-/packages/).
+Binaries are compiled by following [the instruction](https://gitlab.flakybit.net/fb/mongo/db/-/blob/v8/Build.md) and are available [there](https://gitlab.flakybit.net/fb/mongo/db/-/packages/).
 
 ## Source
 
