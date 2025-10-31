@@ -30,8 +30,8 @@ distributives:
     - mkdir -p rootfs/opt/bitnami/mongodb/bin
 
     - echo "Downloading MongoDB ${MONGO_BINARIES_VERSION}"
-    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/11/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/11/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
+    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/14/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz"
+    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/14/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
     - sha256sum -c "mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
     - tar -zxf "mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami/mongodb/bin
 
