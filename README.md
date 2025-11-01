@@ -1,21 +1,15 @@
-# MongoDB OCI
+# MongoDB Community Server OCI
 
-Container images of MongoDB database.
+Container images of MongoDB Community Server.
 
 ## Goal
 
-Since version 5, MongoDB supports only processors with AVX instructions extensions.  
-If you try to run it on an old processor, then you'll get an error like below:
-```
-/opt/bitnami/scripts/libos.sh: line 346:    58 Illegal instruction     (core dumped) "$@" > /dev/null 2>&1
-```
-So, the goal of the project is to provide the ability to run an application on generic `x86-64` architecture.
-However, the build target for version 8 are processors which support [SSE4.2](https://en.wikipedia.org/wiki/SSE4#SSE4.2).
+To bake [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping) into the image.
 
 ## Images
 
-Our images are based on Bitnami's and published in [Quay](https://quay.io/repository/flakybitnet/mongodb-server),
-[GHCR](https://github.com/flakybitnet/mongodb-oci/pkgs/container/mongodb-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/server) and [GitLab](https://gitlab.flakybit.net/fb/mongo/oci/container_registry) registries.
+Our images are based on Bitnami's and published in [Quay](https://quay.io/repository/flakybitnet/mongodb-community-server),
+[GHCR](https://github.com/flakybitnet/mongodb-oci/pkgs/container/mongodb-community-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/community-server) and [GitLab](https://gitlab.flakybit.net/fb/mongo/oci/container_registry) registries.
 
 They also contain the [healthcheck utility written in Rust](https://github.com/syndikat7/mongodb-rust-ping).
 
@@ -23,27 +17,12 @@ They also contain the [healthcheck utility written in Rust](https://github.com/s
 
 You can use it in Docker as simple as:
 ```
-$ docker run -d quay.io/flakybitnet/mongodb-server:<version>
-$ docker run -d ghcr.io/flakybitnet/mongodb-server:<version>
-$ docker run -d public.ecr.aws/flakybitnet/mongodb/server:<version>
-$ docker run -d registry.flakybit.net/fb/mongo/oci/server:<version>
+$ docker run -d quay.io/flakybitnet/mongodb-community-server:<version>
+$ docker run -d ghcr.io/flakybitnet/mongodb-community-server:<version>
+$ docker run -d public.ecr.aws/flakybitnet/mongodb/community-server:<version>
+$ docker run -d registry.flakybit.net/fb/mongo/oci/community-server:<version>
 ```
-
-## Binaries
-
-Binaries are compiled by following [the instruction](https://gitlab.flakybit.net/fb/mongo/db/-/blob/v8/Build.md) and are available [there](https://gitlab.flakybit.net/fb/mongo/db/-/packages/).
 
 ## Source
 
 Source code are available at [GitLab](https://gitlab.flakybit.net/fb/mongo/oci) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-oci).
-
-## Links
-
-1. [MongoDB Platform Support](https://www.mongodb.com/docs/manual/administration/production-notes/#platform-support)
-2. [Mongo 5.0.0 crashes but 4.4.6 works](https://github.com/docker-library/mongo/issues/485)
-3. [MongoDB v5.0 requires CPU AVX instructions](https://github.com/turnkeylinux/tracker/issues/1724)
-4. [libos.sh: line 344 error when installing ReplicaSet](https://github.com/bitnami/charts/issues/12834)
-5. [mongodb can't be installed by helm install](https://github.com/bitnami/charts/issues/10255)
-6. [Bitnami MongoDB](https://github.com/bitnami/containers/tree/main/bitnami/mongodb/7.0/debian-12)
-7. [MongoDB Rust Ping](https://github.com/syndikat7/mongodb-rust-ping)
-8. [MongoDB Tools](https://github.com/mongodb/mongo-tools)

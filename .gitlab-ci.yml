@@ -4,14 +4,9 @@ stages:
 
 variables:
   APP_NAME: 'mongodb'
+  IMAGE_NAME: 'community-server'
   MONGO_VERSION: '8.0.15'
-  MONGO_BINARIES_VERSION: "$MONGO_VERSION-0"
-  MONGO_SHELL_VERSION: '2.5.8-0'
-  MONGO_TOOLS_VERSION: '100.13.0'
   MONGO_RUST_PING_VERSION: '0.4.0'
-  YQ_VERSION: '4.47.2-1'
-  WAIT_PORT_VERSION: '1.0.10-3'
-  RENDER_TEMPLATE_VERSION: '1.0.9-108'
 
 distributives:
   stage: build
@@ -24,51 +19,15 @@ distributives:
     GIT_STRATEGY: none
   script:
     - echo 'Updating and installing required system packages and dependencies'
-    - apt -qq update
-    - apt install -qq -y wget
-
-    - mkdir -p rootfs/opt/bitnami/mongodb/bin
-
-    - echo "Downloading MongoDB ${MONGO_BINARIES_VERSION}"
-    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/14/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://gitlab.flakybit.net/api/v4/projects/14/packages/generic/mongodb/${MONGO_VERSION}/mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - sha256sum -c "mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - tar -zxf "mongodb-${MONGO_BINARIES_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami/mongodb/bin
-
-    - echo "Downloading MongoDB tools ${MONGO_TOOLS_VERSION}"
-    - wget -nv "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian12-x86_64-${MONGO_TOOLS_VERSION}.tgz"
-    - tar -zxf "mongodb-database-tools-debian12-x86_64-${MONGO_TOOLS_VERSION}.tgz" --no-same-owner -C rootfs/opt/bitnami/mongodb/bin --strip-components=2 "mongodb-database-tools-debian12-x86_64-${MONGO_TOOLS_VERSION}/bin"
+    - apt -qq update && apt install -qq -y wget
+    - mkdir dist/
 
     - echo "Downloading MongoDB rust-ping ${MONGO_RUST_PING_VERSION}"
     - wget -nv "https://github.com/syndikat7/mongodb-rust-ping/releases/download/v${MONGO_RUST_PING_VERSION}/mongodb-rust-ping-x86_64-unknown-linux-gnu.tar.gz"
-    - tar -zxf "mongodb-rust-ping-x86_64-unknown-linux-gnu.tar.gz" --no-same-owner -C rootfs/opt/bitnami/mongodb/bin
-
-    - echo "Downloading MongoDB shell ${MONGO_SHELL_VERSION}"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/mongodb-shell-${MONGO_SHELL_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/mongodb-shell-${MONGO_SHELL_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - sha256sum -c "mongodb-shell-${MONGO_SHELL_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - tar -zxf "mongodb-shell-${MONGO_SHELL_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami --strip-components=2  --wildcards '*/files'
-
-    - echo "Downloading yq ${YQ_VERSION}"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/yq-${YQ_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/yq-${YQ_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - sha256sum -c "yq-${YQ_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - tar -zxf "yq-${YQ_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami --strip-components=2  --wildcards '*/files'
-
-    - echo "Downloading wait-for-port ${WAIT_PORT_VERSION}"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/wait-for-port-${WAIT_PORT_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/wait-for-port-${WAIT_PORT_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - sha256sum -c "wait-for-port-${WAIT_PORT_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - tar -zxf "wait-for-port-${WAIT_PORT_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami --strip-components=2  --wildcards '*/files'
-
-    - echo "Downloading render-template ${RENDER_TEMPLATE_VERSION}"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/render-template-${RENDER_TEMPLATE_VERSION}-linux-amd64-debian-12.tar.gz"
-    - wget -nv "https://downloads.bitnami.com/files/stacksmith/render-template-${RENDER_TEMPLATE_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - sha256sum -c "render-template-${RENDER_TEMPLATE_VERSION}-linux-amd64-debian-12.tar.gz.sha256"
-    - tar -zxf "render-template-${RENDER_TEMPLATE_VERSION}-linux-amd64-debian-12.tar.gz" --no-same-owner -C rootfs/opt/bitnami --strip-components=2  --wildcards '*/files'
+    - tar -zxf "mongodb-rust-ping-x86_64-unknown-linux-gnu.tar.gz" --no-same-owner -C dist/
   artifacts:
     paths:
-      - rootfs
+      - dist/
 
 images:
   stage: build
@@ -83,19 +42,12 @@ images:
   image: quay.io/buildah/stable:v1.41.5
   variables:
     STORAGE_DRIVER: 'vfs'
-    BUILDAH_FORMAT: docker
   script:
     - echo "$CI_REGISTRY_PASSWORD" | buildah login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-    - buildah build -t "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME"
+    - buildah build -t "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME"
         --build-arg MONGO_VERSION="$MONGO_VERSION"
-        --build-arg MONGO_BINARIES_VERSION="$MONGO_BINARIES_VERSION"
-        --build-arg MONGO_SHELL_VERSION="$MONGO_SHELL_VERSION"
-        --build-arg MONGO_TOOLS_VERSION="$MONGO_TOOLS_VERSION"
         --build-arg MONGO_RUST_PING_VERSION="$MONGO_RUST_PING_VERSION"
-        --build-arg YQ_VERSION="$YQ_VERSION"
-        --build-arg WAIT_PORT_VERSION="$WAIT_PORT_VERSION"
-        --build-arg RENDER_TEMPLATE_VERSION="$RENDER_TEMPLATE_VERSION"
-    - buildah push "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME"
+    - buildah push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME"
 
 mirror-git-github:
   stage: mirror
@@ -124,11 +76,11 @@ mirror-image-github:
   image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
   variables:
     REGISTRY: ghcr.io
-    IMAGE: flakybitnet/mongodb-server
+    IMAGE: flakybitnet/mongodb-$IMAGE_NAME
     GIT_STRATEGY: none
   script:
     - echo "$GITHUB_PASSWORD" | skopeo login -u "$GITHUB_USER" --password-stdin "$REGISTRY"
-    - skopeo copy "docker://$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
+    - skopeo copy "docker://$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
 
 mirror-image-quay:
   stage: mirror
@@ -138,11 +90,11 @@ mirror-image-quay:
   image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
   variables:
     REGISTRY: quay.io
-    IMAGE: flakybitnet/mongodb-server
+    IMAGE: flakybitnet/mongodb-$IMAGE_NAME
     GIT_STRATEGY: none
   script:
     - echo "$QUAY_PASSWORD" | skopeo login -u "$QUAY_USER" --password-stdin "$REGISTRY"
-    - skopeo copy "docker://$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
+    - skopeo copy "docker://$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
 
 mirror-image-amazon:
   stage: mirror
@@ -152,11 +104,11 @@ mirror-image-amazon:
   image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
   variables:
     REGISTRY: public.ecr.aws
-    IMAGE: flakybitnet/mongodb/server
+    IMAGE: flakybitnet/mongodb/$IMAGE_NAME
     GIT_STRATEGY: none
     AWS_ACCESS_KEY_ID: $ECR_USER
     AWS_SECRET_ACCESS_KEY: $ECR_PASSWORD
   script:
     - printf '{"credHelpers":{"%s":"%s"}}' "$REGISTRY" 'ecr-login' > "$HOME/auth.json"
-    - skopeo copy "docker://$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
+    - skopeo copy "docker://$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
         --dest-authfile="$HOME/auth.json"
