@@ -39,7 +39,7 @@ images:
     - distributives
   dependencies:
     - distributives
-  image: quay.io/buildah/stable:v1.41.5
+  image: quay.io/buildah/stable:v1.42.2
   variables:
     STORAGE_DRIVER: 'vfs'
   script:
@@ -54,7 +54,7 @@ mirror-git-github:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'push'
   dependencies: []
-  image: docker.io/alpine/git:v2.49.1
+  image: docker.io/alpine/git:v2.52.0
   variables:
     GIT_STRATEGY: clone
   script:
@@ -73,7 +73,7 @@ mirror-image-github:
   rules:
     - if: $CI_COMMIT_TAG
   dependencies: []
-  image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
+  image: public.ecr.aws/flakybitnet/skopeo:1.21.0-fb1
   variables:
     REGISTRY: ghcr.io
     IMAGE: flakybitnet/mongodb-$IMAGE_NAME
@@ -87,7 +87,7 @@ mirror-image-quay:
   rules:
     - if: $CI_COMMIT_TAG
   dependencies: []
-  image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
+  image: public.ecr.aws/flakybitnet/skopeo:1.21.0-fb1
   variables:
     REGISTRY: quay.io
     IMAGE: flakybitnet/mongodb-$IMAGE_NAME
@@ -101,7 +101,7 @@ mirror-image-amazon:
   rules:
     - if: $CI_COMMIT_TAG
   dependencies: []
-  image: public.ecr.aws/flakybitnet/skopeo:1.20.0-fb1
+  image: public.ecr.aws/flakybitnet/skopeo:1.21.0-fb1
   variables:
     REGISTRY: public.ecr.aws
     IMAGE: flakybitnet/mongodb/$IMAGE_NAME
