@@ -46,7 +46,6 @@ images:
     - echo "$CI_REGISTRY_PASSWORD" | buildah login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     - buildah build -t "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME"
         --build-arg MONGO_VERSION="$MONGO_VERSION"
-        --build-arg MONGO_RUST_PING_VERSION="$MONGO_RUST_PING_VERSION"
     - buildah push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_REF_NAME"
 
 mirror-git-github:
