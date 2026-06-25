@@ -1,5 +1,6 @@
 stages:
   - build
+  - package
   - mirror
 
 variables:
@@ -71,7 +72,7 @@ distributives:
       - rootfs
 
 images:
-  stage: build
+  stage: package
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
@@ -97,7 +98,7 @@ images:
         --build-arg RENDER_TEMPLATE_VERSION="$RENDER_TEMPLATE_VERSION"
     - buildah push "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME"
 
-mirror-git-github:
+git-github:
   stage: mirror
   rules:
     - if: $CI_PIPELINE_SOURCE == 'push'
@@ -116,7 +117,7 @@ mirror-git-github:
         git push github tag $CI_COMMIT_TAG;
         fi
 
-mirror-image-github:
+image-github:
   stage: mirror
   rules:
     - if: $CI_COMMIT_TAG
@@ -130,7 +131,7 @@ mirror-image-github:
     - echo "$GITHUB_PASSWORD" | skopeo login -u "$GITHUB_USER" --password-stdin "$REGISTRY"
     - skopeo copy "docker://$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
 
-mirror-image-quay:
+image-quay:
   stage: mirror
   rules:
     - if: $CI_COMMIT_TAG
@@ -144,7 +145,7 @@ mirror-image-quay:
     - echo "$QUAY_PASSWORD" | skopeo login -u "$QUAY_USER" --password-stdin "$REGISTRY"
     - skopeo copy "docker://$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_NAME" "docker://$REGISTRY/$IMAGE:$CI_COMMIT_REF_NAME"
 
-mirror-image-amazon:
+image-amazon:
   stage: mirror
   rules:
     - if: $CI_COMMIT_TAG
