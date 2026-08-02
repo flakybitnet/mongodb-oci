@@ -9,7 +9,7 @@ To bake [healthcheck utility written in Rust](https://github.com/syndikat7/mongo
 ## Images
 
 This images are published in [Quay](https://quay.io/repository/flakybitnet/mongodb-community-server),
-[GHCR](https://github.com/flakybitnet/mongodb-oci/pkgs/container/mongodb-community-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/community-server) and [GitLab](https://gitlab.flakybit.net/fb/mongo/oci/container_registry) registries.
+[GHCR](https://github.com/flakybitnet/mongodb-oci/pkgs/container/mongodb-community-server), [AWS](https://gallery.ecr.aws/flakybitnet/mongodb/community-server) and [GitLab](https://gitlab.com/flakybitnet/mongo/oci/container_registry) registries.
 
 ## Usage
 
@@ -19,9 +19,9 @@ You can use it in Docker as simple as:
 $ docker run -d quay.io/flakybitnet/mongodb-community-server:<version>
 $ docker run -d ghcr.io/flakybitnet/mongodb-community-server:<version>
 $ docker run -d public.ecr.aws/flakybitnet/mongodb/community-server:<version>
-$ docker run -d registry.flakybit.net/fb/mongo/oci/community-server:<version>
+$ docker run -d registry.gitlab.com/flakybitnet/mongo/oci/community-server:<version>
 ```
 
 ## Source
 
-Source code are available at [GitLab](https://gitlab.flakybit.net/fb/mongo/oci) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-oci).
+Source code are available at [GitLab](https://gitlab.com/flakybitnet/mongo/oci) and mirrored to [GitHub](https://github.com/flakybitnet/mongodb-oci).
