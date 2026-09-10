@@ -8,6 +8,10 @@ variables:
   IMAGE_NAME: 'community-server'
   MONGO_VERSION: '8.0.28'
   MONGO_RUST_PING_VERSION: '0.4.0'
+  IMG_DEBIAN: 'public.ecr.aws/docker/library/debian:trixie-slim'
+  IMG_BUILDAH: 'quay.io/buildah/stable:v1.43.2'
+  IMG_GIT: 'docker.io/alpine/git:v2.54.0'
+  IMG_SKOPEO: 'public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1'
 
 distributives:
   stage: build
@@ -15,7 +19,7 @@ distributives:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
     - when: on_success
-  image: public.ecr.aws/docker/library/debian:trixie-slim
+  image: $IMG_DEBIAN
   variables:
     GIT_STRATEGY: none
   script:
@@ -40,7 +44,7 @@ images:
     - distributives
   dependencies:
     - distributives
-  image: quay.io/buildah/stable:v1.43.1
+  image: $IMG_BUILDAH
   variables:
     STORAGE_DRIVER: 'vfs'
   script:
@@ -55,7 +59,7 @@ git-github:
     - if: $CI_PIPELINE_SOURCE == 'push'
   dependencies: []
   image:
-    name: docker.io/alpine/git:v2.52.0
+    name: $IMG_GIT
     entrypoint: [ "" ]
   variables:
     GIT_STRATEGY: clone
@@ -76,7 +80,7 @@ image-github:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: ghcr.io
@@ -92,7 +96,7 @@ image-quay:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: quay.io
@@ -108,7 +112,7 @@ image-amazon:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: public.ecr.aws
