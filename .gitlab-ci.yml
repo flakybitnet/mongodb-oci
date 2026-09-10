@@ -6,7 +6,7 @@ stages:
 variables:
   APP_NAME: 'mongodb'
   IMAGE_NAME: 'community-server'
-  MONGO_VERSION: '8.0.28'
+  MONGO_VERSION: '8.0.30'
   MONGO_RUST_PING_VERSION: '0.4.0'
   IMG_DEBIAN: 'public.ecr.aws/docker/library/debian:trixie-slim'
   IMG_BUILDAH: 'quay.io/buildah/stable:v1.43.2'
