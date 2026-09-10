@@ -13,6 +13,9 @@ variables:
   YQ_VERSION: '4.53.3-2'
   WAIT_PORT_VERSION: '1.0.10-14'
   RENDER_TEMPLATE_VERSION: '1.0.9-168'
+  IMG_DEBIAN: 'public.ecr.aws/docker/library/debian:trixie-slim'
+  IMG_BUILDAH: 'quay.io/buildah/stable:v1.43.2'
+  IMG_SKOPEO: 'public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1'
 
 distributives:
   stage: build
@@ -20,7 +23,7 @@ distributives:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
     - when: on_success
-  image: public.ecr.aws/docker/library/debian:trixie-slim
+  image: $IMG_DEBIAN
   variables:
     GIT_STRATEGY: none
   script:
@@ -81,7 +84,7 @@ images:
     - distributives
   dependencies:
     - distributives
-  image: quay.io/buildah/stable:v1.43.1
+  image: $IMG_BUILDAH
   variables:
     STORAGE_DRIVER: 'vfs'
     BUILDAH_FORMAT: docker
@@ -125,7 +128,7 @@ image-github:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: ghcr.io
@@ -141,7 +144,7 @@ image-quay:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: quay.io
@@ -157,7 +160,7 @@ image-amazon:
     - if: $CI_COMMIT_TAG
   dependencies: []
   image:
-    name: public.ecr.aws/flakybitnet/skopeo:1.22.2-fb1
+    name: $IMG_SKOPEO
     entrypoint: [ "" ]
   variables:
     REGISTRY: public.ecr.aws
